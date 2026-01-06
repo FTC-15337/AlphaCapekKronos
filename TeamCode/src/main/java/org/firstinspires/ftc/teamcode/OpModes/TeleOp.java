@@ -37,6 +37,73 @@ public class TeleOp extends LinearOpMode{
     public void SetOperator(){
 
     }
+
+    public void setDriver() {
+        forward = -gamepad1.left_stick_y;
+        strafe = gamepad1.left_stick_x;
+        rotate = gamepad1.right_stick_x;
+        drive.driveFieldRelative(forward, strafe, rotate);
+
+        if(gamepad1.dpad_up) {
+            drive.imu.resetYaw();
+        }
+
+        if(gamepad1.right_trigger >= 0.7){
+            shooter.shooterMax();
+        } else {
+            shooter.shooterStop();
+        }
+
+        if(gamepad1.y){
+            kickStand.kickStandMax();
+        } else {
+            kickStand.kickStandStop();
+        }
+
+        limelight.alignTurret(gamepad1.right_bumper);
+    }
+
+    public void setOperator() {
+        if(gamepad2.left_trigger >= 0.7){
+            intake.IntakeMotorMax();
+        } else if (gamepad2.dpad_up){
+            intake.OutIntake();
+        } else {
+            intake.IntakeMotorStop();
+        }
+
+        if(gamepad2.right_stick_x > 0.0) {
+            turret.Right();
+        } else if(gamepad2.right_stick_x < 0.0){
+            turret.Left();
+        } else {
+            turret.Stop();
+        }
+
+        if(-gamepad2.left_stick_y == 1.0) {
+            hood.hoodHigh();
+        } else if(-gamepad2.left_stick_y == -1.0){
+            hood.hoodLow();
+        } else{
+            hood.hoodMed();
+        }
+
+        if(gamepad2.dpad_left && green == -1){
+            green = 0;
+        }
+
+        if(gamepad2.dpad_right && purple == -1){
+            purple = 0;
+        }
+
+        if(gamepad2.y && step == -1) {
+            step = 0;
+        }
+
+        autoKick();
+        sortGreen();
+        sortPurple();
+    }
     int step = -1;
     public void autoKick(){
         if(step == -1) return;
@@ -208,70 +275,8 @@ public class TeleOp extends LinearOpMode{
         waitForStart();
 
         while(!isStopRequested() && opModeIsActive()) {
-            forward = -gamepad1.left_stick_y;
-            strafe = gamepad1.left_stick_x;
-            rotate = gamepad1.right_stick_x;
-            drive.driveFieldRelative(forward, strafe, rotate);
-
-            if(gamepad2.left_trigger >= 0.7){
-                intake.IntakeMotorMax();
-            } else if (gamepad2.dpad_up){
-                intake.OutIntake();
-            } else {
-                intake.IntakeMotorStop();
-            }
-
-            limelight.alignTurret(gamepad2.left_bumper);
-
-
-
-            if(gamepad1.right_trigger >= 0.7){
-                shooter.shooterMax();
-            } else {
-                shooter.shooterStop();
-            }
-
-            if(gamepad2.right_stick_x > 0.0) {
-                turret.Right();
-            } else if(gamepad2.right_stick_x < 0.0){
-                turret.Left();
-            } else {
-                turret.Stop();
-            }
-
-            if(-gamepad2.left_stick_y == 1.0) {
-                hood.hoodHigh();
-            } else if(-gamepad2.left_stick_y == -1.0){
-                hood.hoodLow();
-            } else{
-                hood.hoodMed();
-            }
-
-            if(gamepad1.y){
-                kickStand.kickStandMax();
-            } else {
-                kickStand.kickStandStop();
-            }
-
-            if(gamepad1.dpad_up) {
-                drive.imu.resetYaw();
-            }
-
-            if(gamepad2.dpad_left && green == -1){
-                green = 0;
-            }
-
-            if(gamepad2.dpad_right && purple == -1){
-                purple = 0;
-            }
-
-            if(gamepad2.y && step == -1) {
-                step = 0;
-            }
-
-            autoKick();
-            sortGreen();
-            sortPurple();
+            setDriver();
+            setOperator();
 
             webcam.update();
             webcam.getId();
