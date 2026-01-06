@@ -20,6 +20,7 @@ import org.firstinspires.ftc.teamcode.Mechanisms.WebcamConfig;
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOp")
 
 public class TeleOp extends LinearOpMode{
+    //Instances Go Here
     KickStand kickStand = new KickStand();
     Shooter shooter = new Shooter();
     Turret turret = new Turret();
@@ -30,13 +31,13 @@ public class TeleOp extends LinearOpMode{
     ElapsedTime kickTimer = new ElapsedTime();
     LimelightConfig limelight = new LimelightConfig();
     WebcamConfig webcam = new WebcamConfig();
-    double forward, strafe, rotate;
     Sorter1 c1 = new Sorter1();
     Sorter2 c2 = new Sorter2();
     Sorter3 c3 = new Sorter3();
-    public void SetOperator(){
 
-    }
+
+    // Variables Go Here
+    double forward, strafe, rotate;
 
     public void setDriver() {
         forward = -gamepad1.left_stick_y;
