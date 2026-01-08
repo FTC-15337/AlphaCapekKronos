@@ -50,7 +50,7 @@ public class TeleOp extends LinearOpMode{
         }
 
         if(gamepad1.right_trigger >= 0.7){
-            shooter.shooterMax();
+            shooter.shooterMid();
         } else {
             shooter.shooterStop();
         }
@@ -115,7 +115,7 @@ public class TeleOp extends LinearOpMode{
                 step = 1;
                 break;
             case 1:
-                if(kickTimer.milliseconds() >= 200){
+                if(kickTimer.milliseconds() >= 900){
                     kick.retractOne();
                     step = 2;
                 }
@@ -126,7 +126,7 @@ public class TeleOp extends LinearOpMode{
                 step = 3;
                 break;
             case 3:
-                if(kickTimer.milliseconds() >= 200){
+                if(kickTimer.milliseconds() >= 900){
                     kick.retractTwo();
                     step = 4;
                 }
@@ -137,7 +137,7 @@ public class TeleOp extends LinearOpMode{
                 step = 5;
                 break;
             case 5:
-                if(kickTimer.milliseconds() >= 200){
+                if(kickTimer.milliseconds() >= 900){
                     kick.retractThree();
                     step = -1;
                 }
