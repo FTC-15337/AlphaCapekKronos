@@ -12,9 +12,11 @@ public class LimelightConfig {
 
 
     private final double Kp = 0.03;
-    private final double minPower = 0.10;
+    private final double minPower = 0.5;
     private final double tolerance = 0.25;
-    private final double searchPower = 1.0;
+    private final double searchPowerR = 1.0;
+
+    private final double searchPowerL = -1.0;
 
     public void init(HardwareMap hwMap) {
         limelight = hwMap.get(Limelight3A.class, "limelight");
@@ -37,6 +39,7 @@ public class LimelightConfig {
                 !result.getFiducialResults().isEmpty();
     }
 
+
     public double getTx() {
         LLResult result = getSafeResult();
         if (result == null) return 0;
@@ -44,7 +47,7 @@ public class LimelightConfig {
     }
 
 
-    public void alignTurret(boolean buttonHeld) {
+    public void alignTurretRight(boolean buttonHeld) {
 
         // Button not held → turret OFF
         if (!buttonHeld) {
@@ -53,7 +56,7 @@ public class LimelightConfig {
         }
 
         if (!hasTarget()) {
-            turret.setPower(searchPower);
+            turret.setPower(searchPowerR);
             return;
         }
 
@@ -69,8 +72,40 @@ public class LimelightConfig {
         if (Math.abs(power) < minPower) {
             power = Math.copySign(minPower, power);
         }
-        power = Math.max(-0.75, Math.min(0.75, power));
+        power = Math.max(-1.0, Math.min(1.0, power));
+
+        turret.setPower(power);
+    }
+
+    public void alignTurretLeft(boolean buttonHeld) {
+
+        // Button not held → turret OFF
+        if (!buttonHeld) {
+            turret.setPower(0);
+            return;
+        }
+
+        if (!hasTarget()) {
+            turret.setPower(searchPowerL);
+            return;
+        }
+
+        double tx = getTx();
+
+        if (Math.abs(tx) <= tolerance) {
+            turret.setPower(0);
+            return;
+        }
+
+        double power = tx * Kp;
+
+        if (Math.abs(power) < minPower) {
+            power = Math.copySign(minPower, power);
+        }
+        power = Math.max(-1.0, Math.min(1.0, power));
 
         turret.setPower(power);
     }
 }
+
+

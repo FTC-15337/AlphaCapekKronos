@@ -35,6 +35,8 @@ public class TeleOp extends LinearOpMode{
     Sorter2 c2 = new Sorter2();
     Sorter3 c3 = new Sorter3();
 
+    boolean buttonHeld = true;
+
 
     // Variables Go Here
     double forward, strafe, rotate;
@@ -61,7 +63,8 @@ public class TeleOp extends LinearOpMode{
             kickStand.kickStandStop();
         }
 
-        limelight.alignTurret(gamepad1.right_bumper);
+        limelight.alignTurretRight(gamepad1.right_bumper);
+        limelight.alignTurretLeft(gamepad1.left_bumper);
     }
 
     public void setOperator() {
