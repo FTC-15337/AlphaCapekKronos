@@ -7,17 +7,22 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class LimelightConfig {
 
     private Limelight3A limelight;
+    private Turret turret;
 
-    Turret turret = new Turret();
+    // PD control constants
+    private final double Kp = 0.05;   // proportional gain
+    private final double Kd = 0.02;   // derivative gain
 
+    private final double tolerance = 1.5; // degrees within which turret stops
+    private final double searchPower = 0.2; // power used when searching
 
-    private final double Kp = 0.03;
-    private final double minPower = 0.5;
-    private final double tolerance = 0.25;
-    private final double searchPowerR = 1.0;
+    private double lastTx = 0; // previous error for derivative
 
-    private final double searchPowerL = -1.0;
+    public LimelightConfig() {
+        turret = new Turret();
+    }
 
+    // Initialize hardware
     public void init(HardwareMap hwMap) {
         limelight = hwMap.get(Limelight3A.class, "limelight");
         turret.init(hwMap);
@@ -26,12 +31,14 @@ public class LimelightConfig {
         limelight.start();
     }
 
+    // Get a safe Limelight result
     private LLResult getSafeResult() {
         LLResult result = limelight.getLatestResult();
         if (result == null || !result.isValid()) return null;
         return result;
     }
 
+    // Check if a fiducial (AprilTag) is visible
     public boolean hasTarget() {
         LLResult result = getSafeResult();
         return result != null &&
@@ -39,73 +46,46 @@ public class LimelightConfig {
                 !result.getFiducialResults().isEmpty();
     }
 
-
+    // Get horizontal offset to target
     public double getTx() {
         LLResult result = getSafeResult();
         if (result == null) return 0;
         return result.getTx();
     }
 
+    // Align turret to the AprilTag using PD control
+    public void alignTurret(boolean buttonHeld) {
 
-    public void alignTurretRight(boolean buttonHeld) {
-
-        // Button not held → turret OFF
         if (!buttonHeld) {
             turret.setPower(0);
+            lastTx = 0;
             return;
         }
 
         if (!hasTarget()) {
-            turret.setPower(searchPowerR);
+            // No target: rotate slowly to search
+            turret.setPower(searchPower);
+            lastTx = 0;
             return;
         }
 
         double tx = getTx();
 
+        // Stop if within tolerance
         if (Math.abs(tx) <= tolerance) {
             turret.setPower(0);
+            lastTx = 0;
             return;
         }
 
-        double power = tx * Kp;
+        // PD control: proportional + derivative
+        double dTx = tx - lastTx;
+        double power = Kp * tx + Kd * dTx;
 
-        if (Math.abs(power) < minPower) {
-            power = Math.copySign(minPower, power);
-        }
-        power = Math.max(-1.0, Math.min(1.0, power));
+        // Clamp to -1 to 1
+        power = Math.max(-1, Math.min(1, power));
 
         turret.setPower(power);
-    }
-
-    public void alignTurretLeft(boolean buttonHeld) {
-
-        // Button not held → turret OFF
-        if (!buttonHeld) {
-            turret.setPower(0);
-            return;
-        }
-
-        if (!hasTarget()) {
-            turret.setPower(searchPowerL);
-            return;
-        }
-
-        double tx = getTx();
-
-        if (Math.abs(tx) <= tolerance) {
-            turret.setPower(0);
-            return;
-        }
-
-        double power = tx * Kp;
-
-        if (Math.abs(power) < minPower) {
-            power = Math.copySign(minPower, power);
-        }
-        power = Math.max(-1.0, Math.min(1.0, power));
-
-        turret.setPower(power);
+        lastTx = tx;
     }
 }
-
-
