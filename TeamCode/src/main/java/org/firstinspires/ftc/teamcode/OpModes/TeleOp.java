@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.Mechanisms.Shooter;
 import org.firstinspires.ftc.teamcode.Mechanisms.Turret;
 import org.firstinspires.ftc.teamcode.Mechanisms.Hood;
 import org.firstinspires.ftc.teamcode.Mechanisms.KickConfig;
-import org.firstinspires.ftc.teamcode.Mechanisms.WebcamConfig;
+//import org.firstinspires.ftc.teamcode.Mechanisms.WebcamConfig;
 
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOp")
@@ -38,23 +38,26 @@ public class TeleOp extends LinearOpMode{
 
     }
     int step = -1;
-    public void autoKick(){
+    public void autoKickMid(){
         if(step == -1) return;
         switch(step){
             case 0:
-                hood.hoodMed();
+                hood.hoodHigh();
+                //shooter.setVelocity(shooter.getVelocity() + 600);
                 kick.kickOne();
                 kickTimer.reset();
                 step = 1;
                 break;
             case 1:
-                if(kickTimer.milliseconds() >= 575){
+                if(kickTimer.milliseconds() >= 600){
                     kick.retractOne();
                     hood.hoodLow();
                     step = 2;
                 }
                 break;
             case 2:
+                //shooter.setVelocity(shooter.getVelocity() + 600);
+                hood.hoodMed();
                 kick.kickTwo();
                 kickTimer.reset();
                 step = 3;
@@ -66,14 +69,61 @@ public class TeleOp extends LinearOpMode{
                 }
                 break;
             case 4:
+                //shooter.setVelocity(shooter.getVelocity() + 600);
+                hood.hoodLow();
                 kick.kickThree();
                 kickTimer.reset();
                 step = 5;
                 break;
             case 5:
-                if(kickTimer.milliseconds() >= 575){
+                if(kickTimer.milliseconds() >= 600){
                     kick.retractThree();
                     step = -1;
+                }
+                break;
+
+
+        }
+    }
+
+    public int stepN = -1;
+    public void autoKickNear(){
+        if(stepN == -1) return;
+        switch(stepN){
+            case 0:
+                hood.hoodLow();
+                //shooter.setVelocity(shooter.getVelocity() + 600);
+                kick.kickOne();
+                kickTimer.reset();
+                stepN = 1;
+                break;
+            case 1:
+                if(kickTimer.milliseconds() >= 600){
+                    kick.retractOne();
+                    stepN = 2;
+                }
+                break;
+            case 2:
+                kick.kickTwo();
+                kickTimer.reset();
+                stepN = 3;
+                break;
+            case 3:
+                if(kickTimer.milliseconds() >= 600){
+                    kick.retractTwo();
+                    stepN = 4;
+                }
+                break;
+            case 4:
+                //shooter.setVelocity(shooter.getVelocity() + 600);
+                kick.kickThree();
+                kickTimer.reset();
+                stepN = 5;
+                break;
+            case 5:
+                if(kickTimer.milliseconds() >= 600){
+                    kick.retractThree();
+                    stepN = -1;
                 }
                 break;
 
@@ -98,7 +148,7 @@ public class TeleOp extends LinearOpMode{
                 }
                 break;
             case 1:
-                if(kickTimer.milliseconds() >= 575){
+                if(kickTimer.milliseconds() >= 600){
                     kick.retractOne();
                     purple = -1;
                 }
@@ -113,7 +163,7 @@ public class TeleOp extends LinearOpMode{
                 }
                 break;
             case 3:
-                if(kickTimer.milliseconds() >= 575){
+                if(kickTimer.milliseconds() >= 600){
                     kick.retractTwo();
                     purple = -1;
                 }
@@ -129,7 +179,7 @@ public class TeleOp extends LinearOpMode{
                 }
                 break;
             case 5:
-                if(kickTimer.milliseconds() >= 575){
+                if(kickTimer.milliseconds() >= 600){
                     kick.retractThree();
                     purple = -1;
                 }
@@ -151,7 +201,7 @@ public class TeleOp extends LinearOpMode{
                 }
                 break;
             case 1:
-                if(kickTimer.milliseconds() >= 575){
+                if(kickTimer.milliseconds() >= 600){
                     kick.retractOne();
                     green = -1;
                 }
@@ -166,7 +216,7 @@ public class TeleOp extends LinearOpMode{
                 }
                 break;
             case 3:
-                if(kickTimer.milliseconds() >= 575){
+                if(kickTimer.milliseconds() >= 600){
                     kick.retractTwo();
                     green = -1;
                 }
@@ -182,7 +232,7 @@ public class TeleOp extends LinearOpMode{
                 }
                 break;
             case 5:
-                if(kickTimer.milliseconds() >= 575){
+                if(kickTimer.milliseconds() >= 600){
                     kick.retractThree();
                     green = -1;
                 }
@@ -230,8 +280,14 @@ public class TeleOp extends LinearOpMode{
 
             if(gamepad1.right_trigger >= 0.7){
                 shooter.shooterMid();
-            } else {
+            }
+
+            if(gamepad1.left_trigger >= 0.7) {
                 shooter.shooterStop();
+            }
+
+            if(gamepad1.aWasPressed()){
+                shooter.shooterNear();
             }
 
             if(gamepad2.right_stick_x > 0.0) {
@@ -260,19 +316,22 @@ public class TeleOp extends LinearOpMode{
                 drive.imu.resetYaw();
             }
 
-            if(gamepad2.dpad_left && green == -1){
+            if(gamepad2.left_bumper && green == -1){
                 green = 0;
             }
 
-            if(gamepad2.dpad_right && purple == -1){
+            if(gamepad2.right_bumper && purple == -1){
                 purple = 0;
             }
 
-            if(gamepad2.y && step == -1) {
+            if(gamepad2.y && step == -1 && shooter.getVelocity() >= 1200) {
                 step = 0;
+            }else if(gamepad2.y && stepN == -1 && shooter.getVelocity() <= 1200){
+                stepN = 0;
             }
 
-            autoKick();
+            autoKickMid();
+            autoKickNear();
             sortGreen();
             sortPurple();
 
@@ -280,6 +339,8 @@ public class TeleOp extends LinearOpMode{
 //            webcam.getId();
 
            // telemetry.addData("Tag ID is", webcam.getId());
+
+            telemetry.addData("SHOOTER VELOCITY IS ", shooter.getVelocity());
 
             telemetry.update();
         }

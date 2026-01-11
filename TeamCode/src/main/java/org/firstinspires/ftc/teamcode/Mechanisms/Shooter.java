@@ -5,14 +5,16 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
-public class Shooter{
+public class Shooter {
     public DcMotorEx shooter;
-    double F = 16.8361;
-    double P = 260.2000;
+
+    double F = 15.2071;
+    double P = 300.0000;
+
 
     public void init(HardwareMap hwMap) {
         shooter = hwMap.get(DcMotorEx.class, "shooter");
-        shooter.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooter.setDirection(DcMotorSimple.Direction.REVERSE);
         shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -21,10 +23,21 @@ public class Shooter{
     }
 
     public void shooterMid(){
-        shooter.setVelocity(1400);
+        shooter.setVelocity(1315);
+    }
+
+    public void shooterNear(){
+        shooter.setVelocity(1000);
     }
     public void shooterStop(){
         shooter.setVelocity(0);
     }
 
+    public double getVelocity() {
+        return shooter.getVelocity();
+    }
+
+    public void setVelocity(double velocity){
+    shooter.setVelocity(velocity);
+    }
 }

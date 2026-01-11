@@ -20,9 +20,9 @@ public class Hood {
         hood.setPosition(0.7);
     }
     public void hoodMed() {
-        hood.setPosition(0.0);
+        hood.setPosition(0.35);
     }
     public void hoodLow() {
-        hood.setPosition(0.0);
+        hood.setPosition(0.05);
     }
 }

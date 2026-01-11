@@ -13,7 +13,7 @@ public class LimelightConfig {
     private final double Kp = 0.05;   // proportional gain
     private final double Kd = 0.02;   // derivative gain
 
-    private final double tolerance = 1.5; // degrees within which turret stops
+    private final double tolerance = 1.0; // degrees within which turret stops
     private final double searchPower = 0.2; // power used when searching
 
     private double lastTx = 0; // previous error for derivative
