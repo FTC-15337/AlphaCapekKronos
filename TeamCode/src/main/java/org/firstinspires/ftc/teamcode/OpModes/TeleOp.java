@@ -22,13 +22,14 @@ import org.firstinspires.ftc.teamcode.Mechanisms.KickConfig;
 public class TeleOp extends LinearOpMode{
     KickStand kickStand = new KickStand();
     Shooter shooter = new Shooter();
-    Turret turret = new Turret();
+    //Turret turret = new Turret();
     Hood hood = new Hood();
     KickConfig kick = new KickConfig();
     MecDrivebase drive = new MecDrivebase();
     IntakeConfig intake = new IntakeConfig();
     ElapsedTime kickTimer = new ElapsedTime();
     LimelightConfig limelight = new LimelightConfig();
+    Turret turret = new Turret();
    // WebcamConfig webcam = new WebcamConfig();
     double forward, strafe, rotate;
     Sorter1 c1 = new Sorter1();
@@ -37,6 +38,10 @@ public class TeleOp extends LinearOpMode{
     public void SetOperator(){
 
     }
+
+    //boolean manualOverride = Math.abs(manualInput) > 0.1;
+
+
     int step = -1;
     public void autoKickMid(){
         if(step == -1) return;
@@ -273,9 +278,8 @@ public class TeleOp extends LinearOpMode{
                 intake.IntakeMotorStop();
             }
 
-            limelight.alignTurret(gamepad1.right_bumper);
-            //limelight.alignTurretL(gamepad1.left_bumper);
-
+            limelight.alignTurretR(gamepad1.right_bumper);
+            limelight.alignTurretL(gamepad1.left_bumper);
 
 
             if(gamepad1.right_trigger >= 0.7){
@@ -290,13 +294,13 @@ public class TeleOp extends LinearOpMode{
                 shooter.shooterNear();
             }
 
-            if(gamepad2.right_stick_x > 0.0) {
-                turret.Right();
-            } else if(gamepad2.right_stick_x < 0.0){
-                turret.Left();
-            } else {
-                turret.Stop();
-            }
+//            if(gamepad2.right_stick_x > 0.0) {
+//                turret.Right();
+//            } else if(gamepad2.right_stick_x < 0.0){
+//                turret.Left();
+//            } else {
+//                turret.Stop();
+//            }
 
             if(-gamepad2.left_stick_y == 1.0) {
                 hood.hoodHigh();

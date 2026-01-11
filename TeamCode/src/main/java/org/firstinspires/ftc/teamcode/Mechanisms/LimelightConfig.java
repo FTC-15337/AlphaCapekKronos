@@ -10,11 +10,12 @@ public class LimelightConfig {
     private Turret turret;
 
     // PD control constants
-    private final double Kp = 0.05;   // proportional gain
-    private final double Kd = 0.02;   // derivative gain
+    private final double Kp = 0.008;   // proportional gain
+    private final double Kd = 0.002;   // derivative gain
 
     private final double tolerance = 1.0; // degrees within which turret stops
-    private final double searchPower = 0.2; // power used when searching
+    private final double searchPowerR = 1.0;// power used when searching
+    public final double searchPowerL = -1.0;
 
     private double lastTx = 0; // previous error for derivative
 
@@ -54,7 +55,7 @@ public class LimelightConfig {
     }
 
     // Align turret to the AprilTag using PD control
-    public void alignTurret(boolean buttonHeld) {
+    public void alignTurretR(boolean buttonHeld) {
 
         if (!buttonHeld) {
             turret.setPower(0);
@@ -64,7 +65,42 @@ public class LimelightConfig {
 
         if (!hasTarget()) {
             // No target: rotate slowly to search
-            turret.setPower(searchPower);
+            turret.setPower(searchPowerR);
+            lastTx = 0;
+            return;
+        }
+
+        double tx = getTx();
+
+        // Stop if within tolerance
+        if (Math.abs(tx) <= tolerance) {
+            turret.setPower(0);
+            lastTx = 0;
+            return;
+        }
+
+        // PD control: proportional + derivative
+        double dTx = tx - lastTx;
+        double power = Kp * tx + Kd * dTx;
+
+        // Clamp to -1 to 1
+        power = Math.max(-1, Math.min(1, power));
+
+        turret.setPower(power);
+        lastTx = tx;
+    }
+
+    public void alignTurretL(boolean buttonHeld) {
+
+        if (!buttonHeld) {
+            turret.setPower(0);
+            lastTx = 0;
+            return;
+        }
+
+        if (!hasTarget()) {
+            // No target: rotate slowly to search
+            turret.setPower(searchPowerL);
             lastTx = 0;
             return;
         }
