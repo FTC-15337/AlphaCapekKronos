@@ -277,21 +277,25 @@ public class TeleOp extends LinearOpMode{
             } else {
                 intake.IntakeMotorStop();
             }
+boolean x = false;boolean y = false;
 
-            limelight.alignTurretR(gamepad1.right_bumper);
-            limelight.alignTurretL(gamepad1.left_bumper);
+            if (gamepad1.right_bumper) {
+                limelight.alignTurretR(true);
+            } else if (gamepad1.left_bumper) {
+                limelight.alignTurretL(true);
+            } else {
+                limelight.alignTurretR(false);
+            limelight.alignTurretL(false);
+            }
+
 
 
             if(gamepad1.right_trigger >= 0.7){
                 shooter.shooterMid();
-            }
-
-            if(gamepad1.left_trigger >= 0.7) {
-                shooter.shooterStop();
-            }
-
-            if(gamepad1.aWasPressed()){
+            } else if(gamepad1.a){
                 shooter.shooterNear();
+            } else {
+                shooter.shooterStop();
             }
 
 //            if(gamepad2.right_stick_x > 0.0) {
