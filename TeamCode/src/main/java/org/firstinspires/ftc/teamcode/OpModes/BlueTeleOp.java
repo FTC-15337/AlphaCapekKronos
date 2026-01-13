@@ -14,15 +14,15 @@ import org.firstinspires.ftc.teamcode.Mechanisms.Shooter;
 import org.firstinspires.ftc.teamcode.Mechanisms.Turret;
 import org.firstinspires.ftc.teamcode.Mechanisms.Hood;
 import org.firstinspires.ftc.teamcode.Mechanisms.KickConfig;
-//import org.firstinspires.ftc.teamcode.Mechanisms.WebcamConfig;
+import org.firstinspires.ftc.teamcode.Mechanisms.WebcamConfig;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 
-@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOp")
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "BlueTeleOp")
 
-public class TeleOp extends LinearOpMode{
+public class BlueTeleOp extends LinearOpMode{
     KickStand kickStand = new KickStand();
     Shooter shooter = new Shooter();
-    //Turret turret = new Turret();
     Hood hood = new Hood();
     KickConfig kick = new KickConfig();
     MecDrivebase drive = new MecDrivebase();
@@ -30,25 +30,86 @@ public class TeleOp extends LinearOpMode{
     ElapsedTime kickTimer = new ElapsedTime();
     LimelightConfig limelight = new LimelightConfig();
     Turret turret = new Turret();
-   // WebcamConfig webcam = new WebcamConfig();
-    double forward, strafe, rotate;
+    WebcamConfig webcam = new WebcamConfig();
     Sorter1 c1 = new Sorter1();
     Sorter2 c2 = new Sorter2();
     Sorter3 c3 = new Sorter3();
-    public void SetOperator(){
 
+    double forward, strafe, rotate;
+
+    public void setDriver() {
+        forward = -gamepad1.left_stick_y;
+        strafe = gamepad1.left_stick_x;
+        rotate = gamepad1.right_stick_x;
+        drive.driveFieldRelative(forward, strafe, rotate);
+
+        if(gamepad1.dpad_up) {
+            drive.imu.resetYaw();
+        }
+
+        boolean x = false;
+        boolean y = false;
+
+        if (gamepad1.right_bumper) {
+            limelight.alignTurretR(true);
+        } else if (gamepad1.left_bumper) {
+            limelight.alignTurretL(true);
+        } else {
+            limelight.alignTurretR(false);
+            limelight.alignTurretL(false);
+        }
+
+        if(gamepad1.y){
+            kickStand.kickStandMax();
+        } else {
+            kickStand.kickStandStop();
+        }
+
+        webcam.update();
+
+        AprilTagDetection id20 = webcam.getTagBySpecificId(20);
+
+        if(gamepad1.right_trigger >= 0.7){
+            shooter.setVelocity(875.25982 * Math.pow(1.00377, webcam.getTagRange(id20)));
+            hood.setHood(0.00396959 * webcam.getTagRange(id20) + 0.166253);
+        } else {
+            shooter.shooterStop();
+        }
+
+        telemetry.addData("Distance is: ", webcam.getTagRange(id20));
     }
 
-    //boolean manualOverride = Math.abs(manualInput) > 0.1;
+    public void setOperator() {
+        if(gamepad2.left_trigger >= 0.7){
+            intake.IntakeMotorMax();
+        } else if (gamepad2.dpad_up){
+            intake.OutIntake();
+        } else {
+            intake.IntakeMotorStop();
+        }
 
+        if(gamepad2.left_bumper && green == -1){
+            green = 0;
+        }
+
+        if(gamepad2.right_bumper && purple == -1){
+            purple = 0;
+        }
+
+        if(gamepad2.yWasPressed() && step == -1) {
+            step = 0;
+        }
+
+        autoKick();
+        sortGreen();
+        sortPurple();
+    }
 
     int step = -1;
-    public void autoKickMid(){
+    public void autoKick(){
         if(step == -1) return;
         switch(step){
             case 0:
-                hood.hoodHigh();
-                //shooter.setVelocity(shooter.getVelocity() + 600);
                 kick.kickOne();
                 kickTimer.reset();
                 step = 1;
@@ -56,13 +117,10 @@ public class TeleOp extends LinearOpMode{
             case 1:
                 if(kickTimer.milliseconds() >= 600){
                     kick.retractOne();
-                    hood.hoodLow();
                     step = 2;
                 }
                 break;
             case 2:
-                //shooter.setVelocity(shooter.getVelocity() + 600);
-                hood.hoodMed();
                 kick.kickTwo();
                 kickTimer.reset();
                 step = 3;
@@ -74,8 +132,6 @@ public class TeleOp extends LinearOpMode{
                 }
                 break;
             case 4:
-                //shooter.setVelocity(shooter.getVelocity() + 600);
-                hood.hoodLow();
                 kick.kickThree();
                 kickTimer.reset();
                 step = 5;
@@ -84,51 +140,6 @@ public class TeleOp extends LinearOpMode{
                 if(kickTimer.milliseconds() >= 600){
                     kick.retractThree();
                     step = -1;
-                }
-                break;
-
-
-        }
-    }
-
-    public int stepN = -1;
-    public void autoKickNear(){
-        if(stepN == -1) return;
-        switch(stepN){
-            case 0:
-                hood.hoodLow();
-                //shooter.setVelocity(shooter.getVelocity() + 600);
-                kick.kickOne();
-                kickTimer.reset();
-                stepN = 1;
-                break;
-            case 1:
-                if(kickTimer.milliseconds() >= 600){
-                    kick.retractOne();
-                    stepN = 2;
-                }
-                break;
-            case 2:
-                kick.kickTwo();
-                kickTimer.reset();
-                stepN = 3;
-                break;
-            case 3:
-                if(kickTimer.milliseconds() >= 600){
-                    kick.retractTwo();
-                    stepN = 4;
-                }
-                break;
-            case 4:
-                //shooter.setVelocity(shooter.getVelocity() + 600);
-                kick.kickThree();
-                kickTimer.reset();
-                stepN = 5;
-                break;
-            case 5:
-                if(kickTimer.milliseconds() >= 600){
-                    kick.retractThree();
-                    stepN = -1;
                 }
                 break;
 
@@ -256,100 +267,19 @@ public class TeleOp extends LinearOpMode{
         hood.init(hardwareMap);
         kickStand.init(hardwareMap);
         drive.init(hardwareMap);
-        limelight.init(hardwareMap);
+        limelight.blueInit(hardwareMap);
         c1.init(hardwareMap);
         c2.init(hardwareMap);
         c3.init(hardwareMap);
-        //webcam.init(hardwareMap, telemetry);
+        webcam.init(hardwareMap, telemetry);
 
         waitForStart();
 
         while(!isStopRequested() && opModeIsActive()) {
-            forward = -gamepad1.left_stick_y;
-            strafe = gamepad1.left_stick_x;
-            rotate = gamepad1.right_stick_x;
-            drive.driveFieldRelative(forward, strafe, rotate);
-
-            if(gamepad2.left_trigger >= 0.7){
-                intake.IntakeMotorMax();
-            } else if (gamepad2.dpad_up){
-                intake.OutIntake();
-            } else {
-                intake.IntakeMotorStop();
-            }
-boolean x = false;boolean y = false;
-
-            if (gamepad1.right_bumper) {
-                limelight.alignTurretR(true);
-            } else if (gamepad1.left_bumper) {
-                limelight.alignTurretL(true);
-            } else {
-                limelight.alignTurretR(false);
-            limelight.alignTurretL(false);
-            }
-
-
-
-            if(gamepad1.right_trigger >= 0.7){
-                shooter.shooterMid();
-            } else if(gamepad1.a){
-                shooter.shooterNear();
-            } else {
-                shooter.shooterStop();
-            }
-
-//            if(gamepad2.right_stick_x > 0.0) {
-//                turret.Right();
-//            } else if(gamepad2.right_stick_x < 0.0){
-//                turret.Left();
-//            } else {
-//                turret.Stop();
-//            }
-
-            if(-gamepad2.left_stick_y == 1.0) {
-                hood.hoodHigh();
-            } else if(-gamepad2.left_stick_y == -1.0){
-                hood.hoodLow();
-            } else{
-                //hood.hoodMed();
-            }
-
-            if(gamepad1.y){
-                kickStand.kickStandMax();
-            } else {
-                kickStand.kickStandStop();
-            }
-
-            if(gamepad1.dpad_up) {
-                drive.imu.resetYaw();
-            }
-
-            if(gamepad2.left_bumper && green == -1){
-                green = 0;
-            }
-
-            if(gamepad2.right_bumper && purple == -1){
-                purple = 0;
-            }
-
-            if(gamepad2.y && step == -1 && shooter.getVelocity() >= 1200) {
-                step = 0;
-            }else if(gamepad2.y && stepN == -1 && shooter.getVelocity() <= 1200){
-                stepN = 0;
-            }
-
-            autoKickMid();
-            autoKickNear();
-            sortGreen();
-            sortPurple();
-
-  //          webcam.update();
-//            webcam.getId();
-
-           // telemetry.addData("Tag ID is", webcam.getId());
+            setDriver();
+            setOperator();
 
             telemetry.addData("SHOOTER VELOCITY IS ", shooter.getVelocity());
-
             telemetry.update();
         }
     }

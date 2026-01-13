@@ -16,6 +16,9 @@ public class Hood {
         hoodLow();
     }
 
+    public void setHood(double input){hood.setPosition(input);}
+    public double getHood(){ return hood.getPosition();}
+
     public void hoodHigh() {
         hood.setPosition(0.7);
     }

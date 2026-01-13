@@ -14,7 +14,7 @@ public class KickConfig {
         three = hwMap.get(Servo.class, "kickThree");
     }
     public void kickOne(){
-        one.setPosition(0.35);
+        one.setPosition(0.4);
     }
     public void retractOne(){
         one.setPosition(0.0);
@@ -23,10 +23,10 @@ public class KickConfig {
         two.setPosition(0.0);
     }
     public void retractTwo(){
-        two.setPosition(0.35);
+        two.setPosition(0.4);
     }
     public void kickThree(){
-        three.setPosition(0.65);
+        three.setPosition(0.6);
     }
     public void retractThree(){
         three.setPosition(1.0);

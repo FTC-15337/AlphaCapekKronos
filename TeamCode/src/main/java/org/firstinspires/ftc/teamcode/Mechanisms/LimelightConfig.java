@@ -13,9 +13,9 @@ public class LimelightConfig {
     private final double Kp = 0.008;   // proportional gain
     private final double Kd = 0.002;   // derivative gain
 
-    private final double tolerance = 0.25; // degrees within which turret stops
-    public final double searchPowerR = 1.0;// power used when searching
-    public final double searchPowerL = -1.0;
+    private final double tolerance = 0.5; // degrees within which turret stops
+    public final double searchPowerR = 0.7;// power used when searching
+    public final double searchPowerL = -0.7;
 
     private double lastTx = 0; // previous error for derivative
 
@@ -24,13 +24,21 @@ public class LimelightConfig {
     }
 
     // Initialize hardware
-    public void init(HardwareMap hwMap) {
+    public void redInit(HardwareMap hwMap) {
         limelight = hwMap.get(Limelight3A.class, "limelight");
         turret.init(hwMap);
 
         limelight.pipelineSwitch(0);
         limelight.start();
     }
+    public void blueInit(HardwareMap hwMap) {
+        limelight = hwMap.get(Limelight3A.class, "limelight");
+        turret.init(hwMap);
+
+        limelight.pipelineSwitch(8);
+        limelight.start();
+    }
+
 
     // Get a safe Limelight result
     private LLResult getSafeResult() {
