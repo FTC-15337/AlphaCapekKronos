@@ -38,6 +38,7 @@ public class RedTeleOp extends LinearOpMode{
     double forward, strafe, rotate;
 
     public void setDriver() {
+        double distance;
         forward = -gamepad1.left_stick_y;
         strafe = gamepad1.left_stick_x;
         rotate = gamepad1.right_stick_x;
