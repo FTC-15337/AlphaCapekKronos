@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class LimelightConfig {
 
     private Limelight3A limelight;
-    private Turret turret;
+    private Turret  turret = new Turret();
 
     public void redInit(HardwareMap hwMap) {
         limelight = hwMap.get(Limelight3A.class, "limelight");
@@ -72,7 +72,7 @@ public class LimelightConfig {
 
     public void alignL() {
         if (!hasTarget()) {
-            turret.setPower(0.5);
+            turret.setPower(-0.5);
             return;
         }
 

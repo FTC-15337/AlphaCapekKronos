@@ -23,11 +23,14 @@ public class Shooter {
     }
 
     public void shooterMid(){
-        shooter.setVelocity(1315);
+        shooter.setVelocity(1200);
     }
 
     public void shooterNear(){
-        shooter.setVelocity(1000);
+        shooter.setVelocity(940);
+    }
+    public void shooterFar(){
+        shooter.setVelocity(1400);
     }
     public void shooterStop(){
         shooter.setVelocity(0);

@@ -50,13 +50,12 @@ public class BlueTeleOp extends LinearOpMode{
         boolean x = false;
         boolean y = false;
 
-        if (gamepad1.right_bumper) {
-            limelight.alignTurretR(true);
-        } else if (gamepad1.left_bumper) {
-            limelight.alignTurretL(true);
+        if (gamepad1.left_bumper) {
+            limelight.alignL();
+        } else if (gamepad1.right_bumper) {
+            limelight.alignR();
         } else {
-            limelight.alignTurretR(false);
-            limelight.alignTurretL(false);
+            turret.setPower(0.0);
         }
 
         if(gamepad1.y){
@@ -278,10 +277,6 @@ public class BlueTeleOp extends LinearOpMode{
         while(!isStopRequested() && opModeIsActive()) {
             setDriver();
             setOperator();
-
-            if(isStopRequested()){
-                webcam.stop();
-            }
 
             telemetry.addData("SHOOTER VELOCITY IS ", shooter.getVelocity());
             telemetry.update();

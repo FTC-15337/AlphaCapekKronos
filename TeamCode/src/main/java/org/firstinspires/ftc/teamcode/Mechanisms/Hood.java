@@ -20,12 +20,12 @@ public class Hood {
     public double getHood(){ return hood.getPosition();}
 
     public void hoodHigh() {
-        hood.setPosition(0.7);
+        hood.setPosition(0.6545);
     }
     public void hoodMed() {
-        hood.setPosition(0.35);
+        hood.setPosition(0.4878);
     }
     public void hoodLow() {
-        hood.setPosition(0.05);
+        hood.setPosition(0.2625);
     }
 }
