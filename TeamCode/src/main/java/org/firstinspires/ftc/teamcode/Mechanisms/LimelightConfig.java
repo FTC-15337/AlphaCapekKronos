@@ -51,20 +51,19 @@ public class LimelightConfig {
 
     public void alignR() {
         if (!hasTarget()) {
-            turret.setPower(0.5);
+            turret.setPower(0.25);
             return;
         }
 
         double tx = limelight.getLatestResult().getTx();
 
-        double kP = 0.03;
+        double kP = 0.015;
         double power = tx * kP;
 
         power = Math.max(-0.4, Math.min(0.4, power)); // clamp
 
-        // deadzone
-        if (Math.abs(tx) < 1.0) {
-            power = 0;
+        if(Math.abs(tx) <= 0.5){
+            turret.setPower(0.0);
         }
 
         turret.setPower(power);
@@ -72,21 +71,20 @@ public class LimelightConfig {
 
     public void alignL() {
         if (!hasTarget()) {
-            turret.setPower(-0.5);
+            turret.setPower(-0.25);
             return;
         }
 
         double tx = limelight.getLatestResult().getTx();
 
-        double kP = 0.03;
+        double kP = 0.015;
         double power = tx * kP;
 
-        power = Math.max(-0.4, Math.min(0.4, power)); // clamp
-
-        // deadzone
-        if (Math.abs(tx) < 1.0) {
-            power = 0;
+        if(Math.abs(tx) <= 0.5){
+            turret.setPower(0.0);
         }
+
+        power = Math.max(-0.4, Math.min(0.4, power)); // clamp
 
         turret.setPower(power);
     }

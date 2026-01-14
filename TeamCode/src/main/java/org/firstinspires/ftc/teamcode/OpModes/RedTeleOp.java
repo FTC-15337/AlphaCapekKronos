@@ -60,6 +60,7 @@ public class RedTeleOp extends LinearOpMode{
         } else {
             turret.setPower(0.0);
         }
+        telemetry.addData("TX" , limelight.getTx());
 
         if(gamepad1.y){
             kickStand.kickStandMax();
