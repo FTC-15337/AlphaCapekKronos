@@ -279,6 +279,10 @@ public class BlueTeleOp extends LinearOpMode{
             setDriver();
             setOperator();
 
+            if(isStopRequested()){
+                webcam.stop();
+            }
+
             telemetry.addData("SHOOTER VELOCITY IS ", shooter.getVelocity());
             telemetry.update();
         }
