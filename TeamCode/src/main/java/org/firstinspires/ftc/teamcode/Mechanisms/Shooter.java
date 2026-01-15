@@ -22,10 +22,7 @@ public class Shooter {
         shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfCoefficients);
     }
 
-    public void shooterMid(){
-        shooter.setVelocity(1200);
-    }
-
+    public void shooterMid(){shooter.setVelocity(1175);}
     public void shooterNear(){
         shooter.setVelocity(940);
     }

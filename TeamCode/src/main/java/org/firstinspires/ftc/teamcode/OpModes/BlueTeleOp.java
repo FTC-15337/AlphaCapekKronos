@@ -114,7 +114,7 @@ public class BlueTeleOp extends LinearOpMode{
                 step = 1;
                 break;
             case 1:
-                if(kickTimer.milliseconds() >= 600){
+                if(kickTimer.milliseconds() >= 250){
                     kick.retractOne();
                     step = 2;
                 }
@@ -125,7 +125,7 @@ public class BlueTeleOp extends LinearOpMode{
                 step = 3;
                 break;
             case 3:
-                if(kickTimer.milliseconds() >= 600){
+                if(kickTimer.milliseconds() >= 250){
                     kick.retractTwo();
                     step = 4;
                 }
@@ -136,7 +136,7 @@ public class BlueTeleOp extends LinearOpMode{
                 step = 5;
                 break;
             case 5:
-                if(kickTimer.milliseconds() >= 600){
+                if(kickTimer.milliseconds() >= 250){
                     kick.retractThree();
                     step = -1;
                 }
@@ -163,7 +163,7 @@ public class BlueTeleOp extends LinearOpMode{
                 }
                 break;
             case 1:
-                if(kickTimer.milliseconds() >= 600){
+                if(kickTimer.milliseconds() >= 250){
                     kick.retractOne();
                     purple = -1;
                 }
@@ -178,7 +178,7 @@ public class BlueTeleOp extends LinearOpMode{
                 }
                 break;
             case 3:
-                if(kickTimer.milliseconds() >= 600){
+                if(kickTimer.milliseconds() >= 250){
                     kick.retractTwo();
                     purple = -1;
                 }
@@ -194,7 +194,7 @@ public class BlueTeleOp extends LinearOpMode{
                 }
                 break;
             case 5:
-                if(kickTimer.milliseconds() >= 600){
+                if(kickTimer.milliseconds() >= 250){
                     kick.retractThree();
                     purple = -1;
                 }
@@ -216,7 +216,7 @@ public class BlueTeleOp extends LinearOpMode{
                 }
                 break;
             case 1:
-                if(kickTimer.milliseconds() >= 600){
+                if(kickTimer.milliseconds() >= 250){
                     kick.retractOne();
                     green = -1;
                 }
@@ -231,7 +231,7 @@ public class BlueTeleOp extends LinearOpMode{
                 }
                 break;
             case 3:
-                if(kickTimer.milliseconds() >= 600){
+                if(kickTimer.milliseconds() >= 250){
                     kick.retractTwo();
                     green = -1;
                 }
@@ -247,7 +247,7 @@ public class BlueTeleOp extends LinearOpMode{
                 }
                 break;
             case 5:
-                if(kickTimer.milliseconds() >= 600){
+                if(kickTimer.milliseconds() >= 250){
                     kick.retractThree();
                     green = -1;
                 }

@@ -32,6 +32,7 @@ public class RedTeleOp extends LinearOpMode{
     MecDrivebase drive = new MecDrivebase();
     IntakeConfig intake = new IntakeConfig();
     ElapsedTime kickTimer = new ElapsedTime();
+    ElapsedTime sortTimer = new ElapsedTime();
     LimelightConfig limelight = new LimelightConfig();
     Turret turret = new Turret();
     //WebcamConfig webcam = new WebcamConfig();
@@ -48,6 +49,23 @@ public class RedTeleOp extends LinearOpMode{
         strafe = gamepad1.left_stick_x;
         rotate = gamepad1.right_stick_x;
         drive.driveFieldRelative(forward, strafe, rotate);
+
+
+        if (gamepad1.right_trigger >= 0.7) {
+            shooter.setVelocity(875.25982 * Math.pow(1.00377, 123));
+            hood.setHood(0.00396959 * 123 + 0.166253);
+        } else if(gamepad1.a) {
+            shooter.shooterMid();
+            hood.hoodMed();
+        } else if(gamepad1.x) {
+            shooter.shooterNear();
+            hood.hoodLow();
+        } else if(gamepad1.b) {
+            shooter.shooterFar();
+            hood.hoodHigh();
+        } else {
+            shooter.shooterStop();
+        }
 
         if(gamepad1.dpad_up) {
             drive.imu.resetYaw();
@@ -67,12 +85,6 @@ public class RedTeleOp extends LinearOpMode{
         } else {
             kickStand.kickStandStop();
         }
-
-//        webcam.update();
-//
-//        AprilTagDetection id24 = webcam.getTagBySpecificId(24);
-//
-//        telemetry.addData("Distance is: ", webcam.getTagRange(id24));
     }
 
     public void setOperator() {
@@ -111,7 +123,7 @@ public class RedTeleOp extends LinearOpMode{
                 step = 1;
                 break;
             case 1:
-                if(kickTimer.milliseconds() >= 300){
+                if(kickTimer.milliseconds() >= 250){
                     kick.retractOne();
                     step = 2;
                 }
@@ -122,7 +134,7 @@ public class RedTeleOp extends LinearOpMode{
                 step = 3;
                 break;
             case 3:
-                if(kickTimer.milliseconds() >= 300){
+                if(kickTimer.milliseconds() >= 250){
                     kick.retractTwo();
                     step = 4;
                 }
@@ -133,7 +145,7 @@ public class RedTeleOp extends LinearOpMode{
                 step = 5;
                 break;
             case 5:
-                if(kickTimer.milliseconds() >= 300){
+                if(kickTimer.milliseconds() >= 250){
                     kick.retractThree();
                     step = -1;
                 }
@@ -160,7 +172,7 @@ public class RedTeleOp extends LinearOpMode{
                 }
                 break;
             case 1:
-                if(kickTimer.milliseconds() >= 200){
+                if(kickTimer.milliseconds() >= 250){
                     kick.retractOne();
                     purple = -1;
                 }
@@ -175,7 +187,7 @@ public class RedTeleOp extends LinearOpMode{
                 }
                 break;
             case 3:
-                if(kickTimer.milliseconds() >= 200){
+                if(kickTimer.milliseconds() >= 250){
                     kick.retractTwo();
                     purple = -1;
                 }
@@ -191,7 +203,7 @@ public class RedTeleOp extends LinearOpMode{
                 }
                 break;
             case 5:
-                if(kickTimer.milliseconds() >= 200){
+                if(kickTimer.milliseconds() >= 250){
                     kick.retractThree();
                     purple = -1;
                 }
@@ -213,7 +225,7 @@ public class RedTeleOp extends LinearOpMode{
                 }
                 break;
             case 1:
-                if(kickTimer.milliseconds() >= 200){
+                if(kickTimer.milliseconds() >= 250){
                     kick.retractOne();
                     green = -1;
                 }
@@ -228,7 +240,7 @@ public class RedTeleOp extends LinearOpMode{
                 }
                 break;
             case 3:
-                if(kickTimer.milliseconds() >= 200){
+                if(kickTimer.milliseconds() >= 250){
                     kick.retractTwo();
                     green = -1;
                 }
@@ -244,7 +256,7 @@ public class RedTeleOp extends LinearOpMode{
                 }
                 break;
             case 5:
-                if(kickTimer.milliseconds() >= 200){
+                if(kickTimer.milliseconds() >= 250){
                     kick.retractThree();
                     green = -1;
                 }
@@ -293,21 +305,6 @@ public class RedTeleOp extends LinearOpMode{
 
             //double distance = Math.sqrt((pose2D.getX(DistanceUnit.INCH) - 1) * (pose2D.getX(DistanceUnit.INCH) - 1) + (pose2D.getY(DistanceUnit.INCH) - 59) * (pose2D.getY(DistanceUnit.INCH) - 59));
 
-            if (gamepad1.right_trigger >= 0.7) {
-                shooter.setVelocity(875.25982 * Math.pow(1.00377, 123));
-                hood.setHood(0.00396959 * 123 + 0.166253);
-            } else if(gamepad1.a) {
-                shooter.shooterMid();
-                hood.hoodMed();
-            } else if(gamepad1.x) {
-                shooter.shooterNear();
-                hood.hoodLow();
-            } else if(gamepad1.b) {
-                shooter.shooterFar();
-                hood.hoodHigh();
-            } else {
-                shooter.shooterStop();
-            }
 
             setDriver();
             setOperator();
@@ -320,6 +317,9 @@ public class RedTeleOp extends LinearOpMode{
 
             telemetry.addData("SHOOTER VELOCITY IS ", shooter.getVelocity());
             telemetry.addData("HOOD POS IS", hood.getHood());
+            telemetry.addData("Color Sensor FR color", c2.getDetectedColor(telemetry));
+            telemetry.addData("Color Sensor FL color", c1.getDetectedColor(telemetry));
+            telemetry.addData("Color Sensor Back color", c3.getDetectedColor(telemetry));
             telemetry.update();
         }
     }
