@@ -27,7 +27,7 @@ public class Shooter {
         shooter.setVelocity(940);
     }
     public void shooterFar(){
-        shooter.setVelocity(1400);
+        shooter.setVelocity(1450);
     }
     public void shooterStop(){
         shooter.setVelocity(0);

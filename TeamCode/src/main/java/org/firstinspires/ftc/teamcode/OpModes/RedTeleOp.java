@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.OpModes;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Mechanisms.LED;
 import org.firstinspires.ftc.teamcode.Mechanisms.Sorter1;
 import org.firstinspires.ftc.teamcode.Mechanisms.Sorter3;
 import org.firstinspires.ftc.teamcode.Mechanisms.Sorter2;
@@ -31,6 +32,7 @@ public class RedTeleOp extends LinearOpMode{
     Sorter1 c1 = new Sorter1();
     Sorter2 c2 = new Sorter2();
     Sorter3 c3 = new Sorter3();
+    LED led = new LED();
 
     double forward, strafe, rotate;
 
@@ -38,7 +40,9 @@ public class RedTeleOp extends LinearOpMode{
     int green = -1;
     int purple = -1;
 
-    int delay = 300;
+    int delay = 250;
+
+    double targetVelocity = 0;
 
     public void setDriver() {
         forward = -gamepad1.left_stick_y;
@@ -53,17 +57,25 @@ public class RedTeleOp extends LinearOpMode{
         if (gamepad1.right_trigger >= 0.7) {
             shooter.setVelocity(875.25982 * Math.pow(1.00377, 123));
             hood.setHood(0.00396959 * 123 + 0.166253);
+            targetVelocity = 875.25982 * Math.pow(1.00377, 123);
         } else if(gamepad1.a) {
             shooter.shooterMid();
+            delay = 250;
             hood.hoodMed();
+            targetVelocity = 1175.0;
         } else if(gamepad1.x) {
             shooter.shooterNear();
             hood.hoodLow();
+            delay = 250;
+            targetVelocity = 940.0;
         } else if(gamepad1.b) {
             shooter.shooterFar();
             hood.hoodHigh();
+            delay = 400;
+            targetVelocity = 1400.0;
         } else {
             shooter.shooterStop();
+            targetVelocity = 0.0;
         }
 
         if (gamepad1.left_bumper) {
@@ -279,6 +291,7 @@ public class RedTeleOp extends LinearOpMode{
         c1.init(hardwareMap);
         c2.init(hardwareMap);
         c3.init(hardwareMap);
+        led.init(hardwareMap);
 
         waitForStart();
 
@@ -286,6 +299,14 @@ public class RedTeleOp extends LinearOpMode{
 
             setDriver();
             setOperator();
+
+            if(shooter.getVelocity() >= targetVelocity - 50 && shooter.getVelocity() <= targetVelocity + 50 && targetVelocity != 0.0){
+                led.setLED();
+            }else{
+                led.off();
+            }
+
+            telemetry.addData("Velocity" , shooter.getVelocity());
 
             telemetry.update();
         }
