@@ -14,9 +14,6 @@ import org.firstinspires.ftc.teamcode.Mechanisms.Shooter;
 import org.firstinspires.ftc.teamcode.Mechanisms.Turret;
 import org.firstinspires.ftc.teamcode.Mechanisms.Hood;
 import org.firstinspires.ftc.teamcode.Mechanisms.KickConfig;
-import org.firstinspires.ftc.teamcode.Mechanisms.WebcamConfig;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
-
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "BlueTeleOp")
 
@@ -28,14 +25,20 @@ public class BlueTeleOp extends LinearOpMode{
     MecDrivebase drive = new MecDrivebase();
     IntakeConfig intake = new IntakeConfig();
     ElapsedTime kickTimer = new ElapsedTime();
+    ElapsedTime sortTimer = new ElapsedTime();
     LimelightConfig limelight = new LimelightConfig();
     Turret turret = new Turret();
-    WebcamConfig webcam = new WebcamConfig();
     Sorter1 c1 = new Sorter1();
     Sorter2 c2 = new Sorter2();
     Sorter3 c3 = new Sorter3();
 
     double forward, strafe, rotate;
+
+    int step = -1;
+    int green = -1;
+    int purple = -1;
+
+    int delay = 300;
 
     public void setDriver() {
         forward = -gamepad1.left_stick_y;
@@ -47,35 +50,36 @@ public class BlueTeleOp extends LinearOpMode{
             drive.imu.resetYaw();
         }
 
-        boolean x = false;
-        boolean y = false;
+        if (gamepad1.right_trigger >= 0.7) {
+            shooter.setVelocity(875.25982 * Math.pow(1.00377, 123));
+            hood.setHood(0.00396959 * 123 + 0.166253);
+        } else if(gamepad1.a) {
+            shooter.shooterMid();
+            hood.hoodMed();
+        } else if(gamepad1.x) {
+            shooter.shooterNear();
+            hood.hoodLow();
+        } else if(gamepad1.b) {
+            shooter.shooterFar();
+            hood.hoodHigh();
+        } else {
+            shooter.shooterStop();
+        }
 
         if (gamepad1.left_bumper) {
             limelight.alignL();
         } else if (gamepad1.right_bumper) {
             limelight.alignR();
         } else {
-            turret.setPower(0.0);
+            turret.Stop();
         }
+        telemetry.addData("TX" , limelight.getTx());
 
         if(gamepad1.y){
             kickStand.kickStandMax();
         } else {
             kickStand.kickStandStop();
         }
-
-        webcam.update();
-
-        AprilTagDetection id20 = webcam.getTagBySpecificId(20);
-
-        if(gamepad1.right_trigger >= 0.7){
-            shooter.setVelocity(875.25982 * Math.pow(1.00377, webcam.getTagRange(id20)));
-            hood.setHood(0.00396959 * webcam.getTagRange(id20) + 0.166253);
-        } else {
-            shooter.shooterStop();
-        }
-
-        telemetry.addData("Distance is: ", webcam.getTagRange(id20));
     }
 
     public void setOperator() {
@@ -99,12 +103,20 @@ public class BlueTeleOp extends LinearOpMode{
             step = 0;
         }
 
+        if(gamepad2.a){
+            purple = 0;
+            sortTimer.reset();
+            if(sortTimer.milliseconds() >= delay){
+                green = 0;
+
+            }
+        }
+
         autoKick();
         sortGreen();
         sortPurple();
     }
 
-    int step = -1;
     public void autoKick(){
         if(step == -1) return;
         switch(step){
@@ -114,7 +126,7 @@ public class BlueTeleOp extends LinearOpMode{
                 step = 1;
                 break;
             case 1:
-                if(kickTimer.milliseconds() >= 250){
+                if(kickTimer.milliseconds() >= delay){
                     kick.retractOne();
                     step = 2;
                 }
@@ -125,7 +137,7 @@ public class BlueTeleOp extends LinearOpMode{
                 step = 3;
                 break;
             case 3:
-                if(kickTimer.milliseconds() >= 250){
+                if(kickTimer.milliseconds() >= delay){
                     kick.retractTwo();
                     step = 4;
                 }
@@ -136,7 +148,7 @@ public class BlueTeleOp extends LinearOpMode{
                 step = 5;
                 break;
             case 5:
-                if(kickTimer.milliseconds() >= 250){
+                if(kickTimer.milliseconds() >= delay){
                     kick.retractThree();
                     step = -1;
                 }
@@ -145,9 +157,6 @@ public class BlueTeleOp extends LinearOpMode{
 
         }
     }
-
-    int green = -1;
-    int purple = -1;
 
     public void sortPurple(){
         if(purple == -1) return;
@@ -163,7 +172,7 @@ public class BlueTeleOp extends LinearOpMode{
                 }
                 break;
             case 1:
-                if(kickTimer.milliseconds() >= 250){
+                if(kickTimer.milliseconds() >= delay){
                     kick.retractOne();
                     purple = -1;
                 }
@@ -178,7 +187,7 @@ public class BlueTeleOp extends LinearOpMode{
                 }
                 break;
             case 3:
-                if(kickTimer.milliseconds() >= 250){
+                if(kickTimer.milliseconds() >= delay){
                     kick.retractTwo();
                     purple = -1;
                 }
@@ -194,7 +203,7 @@ public class BlueTeleOp extends LinearOpMode{
                 }
                 break;
             case 5:
-                if(kickTimer.milliseconds() >= 250){
+                if(kickTimer.milliseconds() >= delay){
                     kick.retractThree();
                     purple = -1;
                 }
@@ -216,7 +225,7 @@ public class BlueTeleOp extends LinearOpMode{
                 }
                 break;
             case 1:
-                if(kickTimer.milliseconds() >= 250){
+                if(kickTimer.milliseconds() >= delay){
                     kick.retractOne();
                     green = -1;
                 }
@@ -231,7 +240,7 @@ public class BlueTeleOp extends LinearOpMode{
                 }
                 break;
             case 3:
-                if(kickTimer.milliseconds() >= 250){
+                if(kickTimer.milliseconds() >= delay){
                     kick.retractTwo();
                     green = -1;
                 }
@@ -247,7 +256,7 @@ public class BlueTeleOp extends LinearOpMode{
                 }
                 break;
             case 5:
-                if(kickTimer.milliseconds() >= 250){
+                if(kickTimer.milliseconds() >= delay){
                     kick.retractThree();
                     green = -1;
                 }
@@ -260,7 +269,7 @@ public class BlueTeleOp extends LinearOpMode{
     @Override
     public void runOpMode() throws InterruptedException {
         intake.init(hardwareMap);
-        kick.init(hardwareMap);
+        kick.init   (hardwareMap);
         shooter.init(hardwareMap);
         turret.init(hardwareMap);
         hood.init(hardwareMap);
@@ -270,15 +279,14 @@ public class BlueTeleOp extends LinearOpMode{
         c1.init(hardwareMap);
         c2.init(hardwareMap);
         c3.init(hardwareMap);
-        webcam.init(hardwareMap, telemetry);
 
         waitForStart();
 
         while(!isStopRequested() && opModeIsActive()) {
+
             setDriver();
             setOperator();
 
-            telemetry.addData("SHOOTER VELOCITY IS ", shooter.getVelocity());
             telemetry.update();
         }
     }

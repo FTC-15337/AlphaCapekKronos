@@ -12,6 +12,8 @@ public class MecDrivebase {
     public DcMotor frontLeft, backLeft, frontRight, backRight;
     public IMU imu;
 
+    private final double max = 1.0;
+
     public void init(HardwareMap hwMap) {
         frontLeft = hwMap.get(DcMotor.class, "frontLeft");
         backLeft = hwMap.get(DcMotor.class, "backLeft");
@@ -48,8 +50,8 @@ public class MecDrivebase {
         double frontRightPower = forward - strafe - rotate;
         double backRightPower = forward + strafe - rotate;
 
-        double maxPower = 1.0;
-        double maxSpeed = 1.0;
+        double maxPower = max;
+        double maxSpeed = max;
 
         maxPower = Math.max(maxPower, Math.abs(frontLeftPower));
         maxPower = Math.max(maxPower, Math.abs(backLeftPower));

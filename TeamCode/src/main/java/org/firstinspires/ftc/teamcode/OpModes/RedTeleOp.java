@@ -1,12 +1,8 @@
 package org.firstinspires.ftc.teamcode.OpModes;
 
-import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Mechanisms.Sorter1;
 import org.firstinspires.ftc.teamcode.Mechanisms.Sorter3;
 import org.firstinspires.ftc.teamcode.Mechanisms.Sorter2;
@@ -18,9 +14,6 @@ import org.firstinspires.ftc.teamcode.Mechanisms.Shooter;
 import org.firstinspires.ftc.teamcode.Mechanisms.Turret;
 import org.firstinspires.ftc.teamcode.Mechanisms.Hood;
 import org.firstinspires.ftc.teamcode.Mechanisms.KickConfig;
-import org.firstinspires.ftc.teamcode.Mechanisms.WebcamConfig;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
-
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "RedTeleOp")
 
@@ -35,14 +28,17 @@ public class RedTeleOp extends LinearOpMode{
     ElapsedTime sortTimer = new ElapsedTime();
     LimelightConfig limelight = new LimelightConfig();
     Turret turret = new Turret();
-    //WebcamConfig webcam = new WebcamConfig();
     Sorter1 c1 = new Sorter1();
     Sorter2 c2 = new Sorter2();
     Sorter3 c3 = new Sorter3();
 
-    GoBildaPinpointDriver pinpoint;
-
     double forward, strafe, rotate;
+
+    int step = -1;
+    int green = -1;
+    int purple = -1;
+
+    int delay = 300;
 
     public void setDriver() {
         forward = -gamepad1.left_stick_y;
@@ -50,6 +46,9 @@ public class RedTeleOp extends LinearOpMode{
         rotate = gamepad1.right_stick_x;
         drive.driveFieldRelative(forward, strafe, rotate);
 
+        if(gamepad1.dpad_up) {
+            drive.imu.resetYaw();
+        }
 
         if (gamepad1.right_trigger >= 0.7) {
             shooter.setVelocity(875.25982 * Math.pow(1.00377, 123));
@@ -67,16 +66,12 @@ public class RedTeleOp extends LinearOpMode{
             shooter.shooterStop();
         }
 
-        if(gamepad1.dpad_up) {
-            drive.imu.resetYaw();
-        }
-
         if (gamepad1.left_bumper) {
             limelight.alignL();
         } else if (gamepad1.right_bumper) {
             limelight.alignR();
         } else {
-            turret.setPower(0.0);
+            turret.Stop();
         }
         telemetry.addData("TX" , limelight.getTx());
 
@@ -108,12 +103,20 @@ public class RedTeleOp extends LinearOpMode{
             step = 0;
         }
 
+        if(gamepad2.a){
+            purple = 0;
+            sortTimer.reset();
+            if(sortTimer.milliseconds() >= delay){
+                green = 0;
+
+            }
+        }
+
         autoKick();
         sortGreen();
         sortPurple();
     }
 
-    int step = -1;
     public void autoKick(){
         if(step == -1) return;
         switch(step){
@@ -123,7 +126,7 @@ public class RedTeleOp extends LinearOpMode{
                 step = 1;
                 break;
             case 1:
-                if(kickTimer.milliseconds() >= 250){
+                if(kickTimer.milliseconds() >= delay){
                     kick.retractOne();
                     step = 2;
                 }
@@ -134,7 +137,7 @@ public class RedTeleOp extends LinearOpMode{
                 step = 3;
                 break;
             case 3:
-                if(kickTimer.milliseconds() >= 250){
+                if(kickTimer.milliseconds() >= delay){
                     kick.retractTwo();
                     step = 4;
                 }
@@ -145,7 +148,7 @@ public class RedTeleOp extends LinearOpMode{
                 step = 5;
                 break;
             case 5:
-                if(kickTimer.milliseconds() >= 250){
+                if(kickTimer.milliseconds() >= delay){
                     kick.retractThree();
                     step = -1;
                 }
@@ -154,9 +157,6 @@ public class RedTeleOp extends LinearOpMode{
 
         }
     }
-
-    int green = -1;
-    int purple = -1;
 
     public void sortPurple(){
         if(purple == -1) return;
@@ -172,7 +172,7 @@ public class RedTeleOp extends LinearOpMode{
                 }
                 break;
             case 1:
-                if(kickTimer.milliseconds() >= 250){
+                if(kickTimer.milliseconds() >= delay){
                     kick.retractOne();
                     purple = -1;
                 }
@@ -187,7 +187,7 @@ public class RedTeleOp extends LinearOpMode{
                 }
                 break;
             case 3:
-                if(kickTimer.milliseconds() >= 250){
+                if(kickTimer.milliseconds() >= delay){
                     kick.retractTwo();
                     purple = -1;
                 }
@@ -203,7 +203,7 @@ public class RedTeleOp extends LinearOpMode{
                 }
                 break;
             case 5:
-                if(kickTimer.milliseconds() >= 250){
+                if(kickTimer.milliseconds() >= delay){
                     kick.retractThree();
                     purple = -1;
                 }
@@ -225,7 +225,7 @@ public class RedTeleOp extends LinearOpMode{
                 }
                 break;
             case 1:
-                if(kickTimer.milliseconds() >= 250){
+                if(kickTimer.milliseconds() >= delay){
                     kick.retractOne();
                     green = -1;
                 }
@@ -240,7 +240,7 @@ public class RedTeleOp extends LinearOpMode{
                 }
                 break;
             case 3:
-                if(kickTimer.milliseconds() >= 250){
+                if(kickTimer.milliseconds() >= delay){
                     kick.retractTwo();
                     green = -1;
                 }
@@ -256,7 +256,7 @@ public class RedTeleOp extends LinearOpMode{
                 }
                 break;
             case 5:
-                if(kickTimer.milliseconds() >= 250){
+                if(kickTimer.milliseconds() >= delay){
                     kick.retractThree();
                     green = -1;
                 }
@@ -268,17 +268,6 @@ public class RedTeleOp extends LinearOpMode{
 
     @Override
     public void runOpMode() throws InterruptedException {
-        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-
-        pinpoint.setOffsets(-4, -6.5, DistanceUnit.INCH);
-
-        pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
-        pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
-
-        pinpoint.resetPosAndIMU();
-
-        pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0));
-
         intake.init(hardwareMap);
         kick.init   (hardwareMap);
         shooter.init(hardwareMap);
@@ -290,36 +279,14 @@ public class RedTeleOp extends LinearOpMode{
         c1.init(hardwareMap);
         c2.init(hardwareMap);
         c3.init(hardwareMap);
-        //webcam.init(hardwareMap, telemetry);
 
         waitForStart();
 
         while(!isStopRequested() && opModeIsActive()) {
-            pinpoint.update();
-
-            Pose2D pose2D = pinpoint.getPosition();
-
-            if (gamepad1.dpad_down) {
-                pinpoint.resetPosAndIMU();
-            }
-
-            //double distance = Math.sqrt((pose2D.getX(DistanceUnit.INCH) - 1) * (pose2D.getX(DistanceUnit.INCH) - 1) + (pose2D.getY(DistanceUnit.INCH) - 59) * (pose2D.getY(DistanceUnit.INCH) - 59));
-
 
             setDriver();
             setOperator();
 
-//            if(isStopRequested()){
-//                webcam.stop();
-//            }
-
-//            telemetry.addData("Distance is (INCH)", distance);
-
-            telemetry.addData("SHOOTER VELOCITY IS ", shooter.getVelocity());
-            telemetry.addData("HOOD POS IS", hood.getHood());
-            telemetry.addData("Color Sensor FR color", c2.getDetectedColor(telemetry));
-            telemetry.addData("Color Sensor FL color", c1.getDetectedColor(telemetry));
-            telemetry.addData("Color Sensor Back color", c3.getDetectedColor(telemetry));
             telemetry.update();
         }
     }

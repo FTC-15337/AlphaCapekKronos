@@ -49,10 +49,6 @@ public class Sorter3 {
         float greenRatio = g / total;
         float blueRatio = b / total;
 
-        //telemetry.addData("Red Ratio", redRatio);
-        //telemetry.addData("Green Ratio", greenRatio);
-        //telemetry.addData("Blue Ratio", blueRatio);
-        //telemetry.addData("Distance", GetDistance());
         if (GetDistance() < 16) {
 
             if (redRatio > 0.22 && greenRatio < 0.4) {

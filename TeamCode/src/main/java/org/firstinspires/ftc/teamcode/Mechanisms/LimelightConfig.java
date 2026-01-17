@@ -8,6 +8,8 @@ public class LimelightConfig {
 
     private Limelight3A limelight;
     private Turret  turret = new Turret();
+    double pValue = 0.015;
+    private final double tolerance = 0.5;
 
     public void redInit(HardwareMap hwMap) {
         limelight = hwMap.get(Limelight3A.class, "limelight");
@@ -24,15 +26,12 @@ public class LimelightConfig {
         limelight.start();
     }
 
-
-    // Get a safe Limelight result
     private LLResult getSafeResult() {
         LLResult result = limelight.getLatestResult();
         if (result == null || !result.isValid()) return null;
         return result;
     }
 
-    // Check if a fiducial (AprilTag) is visible
     public boolean hasTarget() {
         LLResult result = getSafeResult();
         return result != null &&
@@ -40,14 +39,11 @@ public class LimelightConfig {
                 !result.getFiducialResults().isEmpty();
     }
 
-    // Get horizontal offset to target
     public double getTx() {
         LLResult result = getSafeResult();
         if (result == null) return 0;
         return result.getTx();
     }
-
-    // Align turret to the AprilTag using PD control
 
     public void alignR() {
         if (!hasTarget()) {
@@ -57,13 +53,12 @@ public class LimelightConfig {
 
         double tx = limelight.getLatestResult().getTx();
 
-        double kP = 0.015;
-        double power = tx * kP;
+        double power = tx * pValue;
 
         power = Math.max(-0.4, Math.min(0.4, power)); // clamp
 
-        if(Math.abs(tx) <= 0.5){
-            turret.setPower(0.0);
+        if(Math.abs(tx) <= tolerance){
+            turret.Stop();
         }
 
         turret.setPower(power);
@@ -77,17 +72,14 @@ public class LimelightConfig {
 
         double tx = limelight.getLatestResult().getTx();
 
-        double kP = 0.015;
-        double power = tx * kP;
+        double power = tx * pValue;
 
-        if(Math.abs(tx) <= 0.5){
-            turret.setPower(0.0);
+        if(Math.abs(tx) <= tolerance){
+            turret.Stop();
         }
 
         power = Math.max(-0.4, Math.min(0.4, power)); // clamp
 
         turret.setPower(power);
     }
-
-
 }
