@@ -10,22 +10,17 @@ import com.pedropathing.util.Timer;
 
 import org.firstinspires.ftc.teamcode.Mechanisms.Hood;
 import org.firstinspires.ftc.teamcode.Mechanisms.KickConfig;
-import org.firstinspires.ftc.teamcode.Mechanisms.LimelightConfig;
-import org.firstinspires.ftc.teamcode.Mechanisms.MecDrivebase;
 import org.firstinspires.ftc.teamcode.Mechanisms.Shooter;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-@Autonomous(name = "Blue Auto")
-public class BlueAutoHighDef extends OpMode {
+@Autonomous(name = "Blue Auto Top")
+public class BlueAutoTop extends OpMode {
     private Follower follower;
     private Timer pathTimer, opModeTimer;
-    private Timer kickTimer;
 
     private KickConfig kick = new KickConfig();
     private Hood hood = new Hood();
     private Shooter shooter = new Shooter();
-    private LimelightConfig limelightConfig = new LimelightConfig();
-    private MecDrivebase drive = new MecDrivebase();
 
     public enum PathState {
         // START POSITION_END POSITION
@@ -33,34 +28,27 @@ public class BlueAutoHighDef extends OpMode {
         // SHOOT > ATTEMPT TO SCORE THE ARTIFACT
         DRIVE_START_POS_SHOOT_POS,
         SHOOT_PRELOAD,
-        INTAKE_ONE,
         STOP
     }
 
     PathState pathState;
 
-    private final Pose startPose = new Pose(23.024390243902435, 120.1951219512195, Math.toRadians(143));
-    private final Pose shootPos = new Pose(58.146341463414636, 84.97560975609755, Math.toRadians(143));
-    private final Pose intakePos = new Pose(15.804878048780488, 84.97560975609755, Math.toRadians(180));
+    private final Pose startPose = new Pose(20.463414634146346, 122.92682926829264, Math.toRadians(143));
+    private final Pose shootPos = new Pose(38.634146341463406, 125.65853658536585, Math.toRadians(155));
 
-    private PathChain driveStartPosShootPos, driveShootPosIntakePos;
+    private PathChain driveStartPosShootPos;
 
     public void buildPaths() {
         // put in coordinates for starting pose > ending pose
         driveStartPosShootPos = follower.pathBuilder()
                 .addPath(new BezierLine(startPose, shootPos))
-                .setConstantHeadingInterpolation(Math.toRadians(143))
+                .setLinearHeadingInterpolation(startPose.getHeading(), shootPos.getHeading())
                 .build();
-
-//        driveShootPosIntakePos = follower.pathBuilder()
-//                .addPath(new BezierLine(shootPos, intakePos))
-//                .setConstantHeadingInterpolation(Math.toRadians(180))
-//                .build();
     }
 
 
     public int stepN = -1;
-    public void autoKickMid(){
+    public void autoKickNear(){
         if(stepN == -1) return;
         switch(stepN){
             case 0:
@@ -69,7 +57,7 @@ public class BlueAutoHighDef extends OpMode {
                 stepN = 1;
                 break;
             case 1:
-                if(kickTimer.getElapsedTimeSeconds() > 2.6){
+                if(pathTimer.getElapsedTimeSeconds() > 2.6){
                     kick.retractOne();
                     stepN = 2;
                 }
@@ -79,7 +67,7 @@ public class BlueAutoHighDef extends OpMode {
                 stepN = 3;
                 break;
             case 3:
-                if(kickTimer.getElapsedTimeSeconds() > 2.85){
+                if(pathTimer.getElapsedTimeSeconds() > 3.2){
                     kick.retractTwo();
                     stepN = 4;
                 }
@@ -89,7 +77,7 @@ public class BlueAutoHighDef extends OpMode {
                 stepN = 5;
                 break;
             case 5:
-                if(kickTimer.getElapsedTimeSeconds() > 3.1){
+                if(pathTimer.getElapsedTimeSeconds() > 3.8){
                     kick.retractThree();
                     stepN = -1;
                 }
@@ -102,31 +90,17 @@ public class BlueAutoHighDef extends OpMode {
     public void statePathUpdate() {
         switch(pathState) {
             case DRIVE_START_POS_SHOOT_POS:
-                follower.setMaxPower(0.5);
                 follower.followPath(driveStartPosShootPos, true);
                 setPathState(PathState.SHOOT_PRELOAD); // reset timer & transition to new state
                 break;
-//            case SHOOT_PRELOAD:
-//                // check is follower done its path
-//                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2.0) {
-//                    stepN = 0;
-//                    telemetry.addLine("Firing");
-//                    setPathState(PathState.INTAKE_ONE);
-//                }
-//                break;
-//            case INTAKE_ONE:
-//                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1.0) {
-//                    follower.followPath(driveShootPosIntakePos, true);
-//                    setPathState(PathState.STOP);
-//                }
-//                break;
-//            case STOP:
-//                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1.0) {
-//                    drive.frontLeft.setPower(0.0);
-//                    drive.frontRight.setPower(0.0);
-//                    drive.backRight.setPower(0.0);
-//                    drive.backLeft.setPower(0.0);
-//                }
+            case SHOOT_PRELOAD:
+                // check is follower done its path
+                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2.0) {
+                    stepN = 0;
+                    telemetry.addLine("Firing");
+                    setPathState(PathState.STOP);
+                }
+                break;
             default:
                 telemetry.addLine("No state commanded");
                 break;
@@ -148,8 +122,6 @@ public class BlueAutoHighDef extends OpMode {
         kick.init(hardwareMap);
         hood.init(hardwareMap);
         shooter.init(hardwareMap);
-        limelightConfig.blueInit(hardwareMap);
-        drive.init(hardwareMap);
 
         buildPaths();
         follower.setPose(startPose);
@@ -157,8 +129,7 @@ public class BlueAutoHighDef extends OpMode {
 
     @Override
     public void start() {
-        shooter.shooterMid();
-        hood.hoodMed();
+        shooter.shooterNear();
         opModeTimer.resetTimer();
         setPathState(pathState);
     }
@@ -168,6 +139,9 @@ public class BlueAutoHighDef extends OpMode {
         follower.update();
         statePathUpdate();
 
-        autoKickMid();
+        autoKickNear();
+
+        telemetry.addData("x", follower.getPose().getX());
+        telemetry.addData("y", follower.getPose().getY());
     }
 }

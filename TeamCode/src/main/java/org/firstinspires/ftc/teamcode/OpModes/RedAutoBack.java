@@ -7,16 +7,18 @@ import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.pedropathing.util.Timer;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Mechanisms.Hood;
 import org.firstinspires.ftc.teamcode.Mechanisms.KickConfig;
 import org.firstinspires.ftc.teamcode.Mechanisms.Shooter;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
-@Autonomous(name = "Red Auto")
-public class RedAutoHighDef extends OpMode {
+@Autonomous(name = "Red Auto Back")
+public class RedAutoBack extends OpMode {
     private Follower follower;
     private Timer pathTimer, opModeTimer;
+    ElapsedTime kickTimer = new ElapsedTime();
 
     private KickConfig kick = new KickConfig();
     private Hood hood = new Hood();
@@ -26,78 +28,88 @@ public class RedAutoHighDef extends OpMode {
         // START POSITION_END POSITION
         // DRIVE > MOVEMENT STATE
         // SHOOT > ATTEMPT TO SCORE THE ARTIFACT
-        DRIVE_START_POS_SHOOT_POS,
         SHOOT_PRELOAD,
+        DRIVE_START_POS_LEAVE,
         STOP
     }
 
     PathState pathState;
 
-    private final Pose startPose = new Pose(123.536585366, 122.92682926829264, Math.toRadians(36));
-    private final Pose shootPos = new Pose(106.341463415, 126.04878048780488, Math.toRadians(24));
+    private final Pose startPose = new Pose(87, 9, Math.toRadians(90));
+    private final Pose leavePos = new Pose(129.65018094089265, 9, Math.toRadians(90));
 
-    private PathChain driveStartPosShootPos;
+    private PathChain driveStartPosLeavePos;
 
     public void buildPaths() {
         // put in coordinates for starting pose > ending pose
-        driveStartPosShootPos = follower.pathBuilder()
-                .addPath(new BezierLine(startPose, shootPos))
-                .setLinearHeadingInterpolation(startPose.getHeading(), shootPos.getHeading())
+        driveStartPosLeavePos = follower.pathBuilder()
+                .addPath(new BezierLine(startPose, leavePos))
+                .setConstantHeadingInterpolation(Math.toRadians(90))
                 .build();
     }
 
 
     public int stepN = -1;
-    public void autoKickNear(){
-        if(stepN == -1) return;
-        switch(stepN){
+    public void autoKick() {
+        if (stepN == -1) return;
+
+        switch (stepN) {
             case 0:
-                hood.hoodLow();
                 kick.kickOne();
+                kickTimer.reset();
                 stepN = 1;
                 break;
+
             case 1:
-                if(pathTimer.getElapsedTimeSeconds() > 2.6){
+                if (kickTimer.milliseconds() >= 700) {
                     kick.retractOne();
                     stepN = 2;
                 }
                 break;
+
             case 2:
                 kick.kickTwo();
+                kickTimer.reset();
                 stepN = 3;
                 break;
+
             case 3:
-                if(pathTimer.getElapsedTimeSeconds() > 3.2){
+                if (kickTimer.milliseconds() >= 700) {
                     kick.retractTwo();
                     stepN = 4;
                 }
                 break;
+
             case 4:
                 kick.kickThree();
+                kickTimer.reset();
                 stepN = 5;
                 break;
+
             case 5:
-                if(pathTimer.getElapsedTimeSeconds() > 3.8){
+                if (kickTimer.milliseconds() >= 700) {
                     kick.retractThree();
                     stepN = -1;
                 }
                 break;
-
-
         }
     }
 
+
     public void statePathUpdate() {
         switch(pathState) {
-            case DRIVE_START_POS_SHOOT_POS:
-                follower.followPath(driveStartPosShootPos, true);
-                setPathState(PathState.SHOOT_PRELOAD); // reset timer & transition to new state
-                break;
             case SHOOT_PRELOAD:
-                // check is follower done its path
-                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2.0) {
+                if (pathTimer.getElapsedTimeSeconds() > 4.0) {
                     stepN = 0;
                     telemetry.addLine("Firing");
+                    setPathState(PathState.DRIVE_START_POS_LEAVE); // reset timer & transition to new state
+                }
+                break;
+            case DRIVE_START_POS_LEAVE:
+                // check is follower done its path
+                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 5.0) {
+                    follower.setMaxPower(1.0);
+                    follower.followPath(driveStartPosLeavePos, true);
                     setPathState(PathState.STOP);
                 }
                 break;
@@ -114,7 +126,7 @@ public class RedAutoHighDef extends OpMode {
 
     @Override
     public void init() {
-        pathState = PathState.DRIVE_START_POS_SHOOT_POS;
+        pathState = PathState.SHOOT_PRELOAD;
         pathTimer = new Timer();
         opModeTimer = new Timer();
         follower = Constants.createFollower(hardwareMap);
@@ -129,7 +141,8 @@ public class RedAutoHighDef extends OpMode {
 
     @Override
     public void start() {
-        shooter.shooterNear();
+        shooter.shooterFar();
+        hood.hoodHigh();
         opModeTimer.resetTimer();
         setPathState(pathState);
     }
@@ -139,7 +152,7 @@ public class RedAutoHighDef extends OpMode {
         follower.update();
         statePathUpdate();
 
-        autoKickNear();
+        autoKick();
 
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
