@@ -8,7 +8,6 @@ import org.firstinspires.ftc.teamcode.Mechanisms.Sorter1;
 import org.firstinspires.ftc.teamcode.Mechanisms.Sorter3;
 import org.firstinspires.ftc.teamcode.Mechanisms.Sorter2;
 import org.firstinspires.ftc.teamcode.Mechanisms.IntakeConfig;
-import org.firstinspires.ftc.teamcode.Mechanisms.KickStand;
 import org.firstinspires.ftc.teamcode.Mechanisms.LimelightConfig;
 import org.firstinspires.ftc.teamcode.Mechanisms.MecDrivebase;
 import org.firstinspires.ftc.teamcode.Mechanisms.Shooter;
@@ -19,7 +18,7 @@ import org.firstinspires.ftc.teamcode.Mechanisms.KickConfig;
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "BlueTeleOp")
 
 public class BlueTeleOp extends LinearOpMode{
-    KickStand kickStand = new KickStand();
+    //kickStand //kickStand = new //kickStand();
     Shooter shooter = new Shooter();
     Hood hood = new Hood();
     KickConfig kick = new KickConfig();
@@ -40,7 +39,7 @@ public class BlueTeleOp extends LinearOpMode{
     int green = -1;
     int purple = -1;
 
-    int delay = 300;
+    int delay = 250;
 
     double targetVelocity = 0;
 
@@ -60,15 +59,18 @@ public class BlueTeleOp extends LinearOpMode{
             targetVelocity = 875.25982 * Math.pow(1.00377, 123);
         } else if(gamepad1.a) {
             shooter.shooterMid();
+            delay = 250;
             hood.hoodMed();
             targetVelocity = 1175.0;
         } else if(gamepad1.x) {
             shooter.shooterNear();
             hood.hoodLow();
+            delay = 250;
             targetVelocity = 940.0;
         } else if(gamepad1.b) {
             shooter.shooterFar();
             hood.hoodHigh();
+            delay = 500;
             targetVelocity = 1400.0;
         } else {
             shooter.shooterStop();
@@ -85,9 +87,9 @@ public class BlueTeleOp extends LinearOpMode{
         telemetry.addData("TX" , limelight.getTx());
 
         if(gamepad1.y){
-            kickStand.kickStandMax();
+            //kickStand.//kickStandMax();
         } else {
-            kickStand.kickStandStop();
+            //kickStand.//kickStandStop();
         }
     }
 
@@ -282,7 +284,7 @@ public class BlueTeleOp extends LinearOpMode{
         shooter.init(hardwareMap);
         turret.init(hardwareMap);
         hood.init(hardwareMap);
-        kickStand.init(hardwareMap);
+        //kickStand.init(hardwareMap);
         drive.init(hardwareMap);
         limelight.blueInit(hardwareMap);
         c1.init(hardwareMap);

@@ -67,9 +67,9 @@ public class AutoConfig{
     private ElapsedTime holdTimer = new ElapsedTime();  // User for any motion requiring a hold time or timeout.
 
     private int rawDriveOdometer    = 0; // Unmodified axial odometer count
-    private int driveOdometerOffset = 9; // Used to offset axial odometer
+    private int driveOdometerOffset = 6; // Used to offset axial odometer
     private int rawStrafeOdometer   = 0; // Unmodified lateral odometer count
-    private int strafeOdometerOffset= 4; // Used to offset lateral odometer
+    private int strafeOdometerOffset= -4; // Used to offset lateral odometer
     private double rawHeading       = 0; // Unmodified heading (degrees)
     private double headingOffset    = 0; // Used to offset heading
 
