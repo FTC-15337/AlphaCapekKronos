@@ -11,7 +11,6 @@ public class Shooter {
     double F = 15.2071;
     double P = 300.0000;
 
-
     public void init(HardwareMap hwMap) {
         shooter = hwMap.get(DcMotorEx.class, "shooter");
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
